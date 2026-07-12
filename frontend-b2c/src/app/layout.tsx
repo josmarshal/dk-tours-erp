@@ -22,7 +22,7 @@ export default function RootLayout({
       <body>
         <header className="b2c-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src="/logo.png" alt="DK Equipments" style={{ height: '40px', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="DK Equipments" style={{ height: '65px', objectFit: 'contain' }} />
           </div>
           <nav style={{ display: 'flex', gap: '32px', fontWeight: 600 }}>
             <a href="#" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Hotels</a>
