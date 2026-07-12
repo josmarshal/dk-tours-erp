@@ -11,10 +11,10 @@
   --text-muted: #94a3b8;
   
   /* Brand Colors */
-  --accent-primary: #0ea5e9; /* Vibrant Sky Blue */
-  --accent-primary-hover: #0284c7;
-  --accent-secondary: #f43f5e; /* Rose Red for Calls to Action */
-  --accent-secondary-hover: #e11d48;
+  --accent-primary: #da291c; /* DK Red */
+  --accent-primary-hover: #b82218;
+  --accent-secondary: #ffc72c; /* DK Yellow for Calls to Action */
+  --accent-secondary-hover: #e0ae24;
 
   /* Typography */
   --font-family-main: 'Outfit', 'Inter', system-ui, sans-serif;
@@ -79,7 +79,7 @@ body {
   position: relative;
   height: 60vh;
   min-height: 500px;
-  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #da291c 0%, #a31c12 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -147,7 +147,7 @@ body {
 
 .b2c-btn {
   background-color: var(--accent-secondary);
-  color: white;
+  color: #0f172a;
   border: none;
   border-radius: var(--radius-lg);
   padding: 16px 32px;

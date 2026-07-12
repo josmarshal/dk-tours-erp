@@ -17,9 +17,10 @@ export default function Sidebar() {
 
   return (
     <aside className="erp-sidebar">
-      <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>
-          Digital Tours ERP
+      <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
+        <img src="/logo.png" alt="DK Equipments" style={{ height: '40px', objectFit: 'contain', alignSelf: 'flex-start' }} />
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', marginTop: '12px' }}>
+          ERP System
         </h2>
         <p className="text-muted" style={{ fontSize: '0.875rem', marginTop: '4px' }}>Advanced Distribution</p>
       </div>
@@ -41,7 +42,7 @@ export default function Sidebar() {
                     textDecoration: 'none',
                     fontWeight: isActive ? 600 : 500,
                     transition: 'all var(--transition-fast)',
-                    boxShadow: isActive ? '0 4px 14px 0 rgba(59, 130, 246, 0.39)' : 'none'
+                    boxShadow: isActive ? '0 4px 14px 0 rgba(218, 41, 28, 0.39)' : 'none'
                   }}
                   onMouseOver={(e) => {
                     if (!isActive) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
