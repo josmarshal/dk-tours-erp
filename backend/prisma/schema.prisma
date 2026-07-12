@@ -1,0 +1,353 @@
+// Digital Tours & Hotel Reservation - Advanced Travel Management ERP
+// Prisma Schema Definition
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// -----------------------------------------
+// 1. IAM & ORGANIZATION
+// -----------------------------------------
+
+model OrganizationType {
+  id            String         @id @default(uuid())
+  name          String         @unique // Digital Tours, Hotel, Travel Agency, etc.
+  organizations Organization[]
+  createdAt     DateTime       @default(now())
+}
+
+model Organization {
+  id                 String             @id @default(uuid())
+  name               String
+  typeId             String
+  type               OrganizationType   @relation(fields: [typeId], references: [id])
+  users              OrganizationUser[]
+  roles              Role[]
+  createdAt          DateTime           @default(now())
+}
+
+model User {
+  id            String             @id @default(uuid())
+  email         String             @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  organizations OrganizationUser[]
+  createdAt     DateTime           @default(now())
+}
+
+model OrganizationUser {
+  id             String       @id @default(uuid())
+  userId         String
+  organizationId String
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  roles          UserRole[]
+  createdAt      DateTime     @default(now())
+
+  @@unique([userId, organizationId])
+}
+
+model Role {
+  id             String             @id @default(uuid())
+  name           String
+  organizationId String
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  permissions    RolePermission[]
+  users          UserRole[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique // e.g. 'inventory:write'
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  orgUserId String
+  roleId    String
+  orgUser   OrganizationUser @relation(fields: [orgUserId], references: [id])
+  role      Role             @relation(fields: [roleId], references: [id])
+
+  @@id([orgUserId, roleId])
+}
+
+// -----------------------------------------
+// 2. FINANCE & ACCOUNTING (Double Entry)
+// -----------------------------------------
+
+model ChartOfAccounts {
+  id           String        @id @default(uuid())
+  code         String        @unique // e.g., '1000'
+  name         String        // e.g., 'Cash'
+  type         String        // Asset, Liability, Equity, Revenue, Expense
+  currency     String        @default("KWD")
+  journalLines JournalLine[]
+}
+
+model JournalEntry {
+  id           String        @id @default(uuid())
+  journalNo    String        @unique
+  date         DateTime
+  reference    String?
+  description  String
+  sourceModule String
+  lines        JournalLine[]
+  createdAt    DateTime      @default(now())
+}
+
+model JournalLine {
+  id             String          @id @default(uuid())
+  journalId      String
+  accountId      String
+  debit          Decimal         @default(0) @db.Decimal(12, 4)
+  credit         Decimal         @default(0) @db.Decimal(12, 4)
+  currency       String          @default("KWD")
+  exchangeRate   Decimal         @default(1) @db.Decimal(10, 6)
+  baseDebit      Decimal         @default(0) @db.Decimal(12, 4)
+  baseCredit     Decimal         @default(0) @db.Decimal(12, 4)
+  
+  journal        JournalEntry    @relation(fields: [journalId], references: [id])
+  account        ChartOfAccounts @relation(fields: [accountId], references: [id])
+}
+
+model Invoice {
+  id             String   @id @default(uuid())
+  invoiceNo      String   @unique
+  customerId     String?
+  vendorId       String?
+  amount         Decimal  @db.Decimal(12, 4)
+  paidAmount     Decimal  @default(0) @db.Decimal(12, 4)
+  currency       String
+  status         String   // Draft, Posted, Paid, Overdue
+  dueDate        DateTime
+  createdAt      DateTime @default(now())
+}
+
+// -----------------------------------------
+// 3. CUSTOMER (CRM)
+// -----------------------------------------
+
+model Customer {
+  id             String   @id @default(uuid())
+  accountNo      String   @unique
+  type           String   // B2C, B2B, Corporate
+  firstName      String
+  lastName       String
+  email          String
+  mobile         String?
+  nationality    String?
+  status         String   @default("Active")
+  createdAt      DateTime @default(now())
+  bookings       Booking[]
+}
+
+// -----------------------------------------
+// 4. VENDOR & HOTEL EXTRANET
+// -----------------------------------------
+
+model Vendor {
+  id             String   @id @default(uuid())
+  vendorId       String   @unique
+  companyName    String
+  type           String   // Hotel, DMC, TourOperator
+  status         String   @default("Pending Approval")
+  hotels         Hotel[]
+  tours          Tour[]
+  createdAt      DateTime @default(now())
+}
+
+model Hotel {
+  id             String   @id @default(uuid())
+  vendorId       String
+  hotelCode      String   @unique
+  name           String
+  category       String
+  city           String
+  country        String
+  vendor         Vendor   @relation(fields: [vendorId], references: [id])
+  rooms          RoomType[]
+  createdAt      DateTime @default(now())
+}
+
+model RoomType {
+  id             String   @id @default(uuid())
+  hotelId        String
+  roomCode       String
+  name           String
+  maxOccupancy   Int
+  hotel          Hotel    @relation(fields: [hotelId], references: [id])
+  inventory      HotelInventory[]
+  ratePlans      RatePlan[]
+}
+
+model HotelInventory {
+  id             String   @id @default(uuid())
+  roomId         String
+  date           DateTime
+  totalAlloc     Int      @default(0)
+  soldAlloc      Int      @default(0)
+  blockedAlloc   Int      @default(0)
+  stopSell       Boolean  @default(false)
+  room           RoomType @relation(fields: [roomId], references: [id])
+
+  @@unique([roomId, date])
+}
+
+model RatePlan {
+  id             String   @id @default(uuid())
+  roomId         String
+  rateCode       String
+  mealPlan       String
+  refundType     String
+  room           RoomType @relation(fields: [roomId], references: [id])
+}
+
+// -----------------------------------------
+// 5. SALES & BOOKING
+// -----------------------------------------
+
+model TravelFile {
+  id             String   @id @default(uuid())
+  fileNo         String   @unique
+  status         String
+  bookings       Booking[]
+  createdAt      DateTime @default(now())
+}
+
+model Booking {
+  id             String   @id @default(uuid())
+  bookingRef     String   @unique
+  customerId     String
+  travelFileId   String?
+  productType    String   // Hotel, Tour, Transfer
+  status         String   // Draft, Confirmed, Cancelled
+  totalAmount    Decimal  @db.Decimal(12, 4)
+  currency       String
+  
+  customer       Customer @relation(fields: [customerId], references: [id])
+  travelFile     TravelFile? @relation(fields: [travelFileId], references: [id])
+  createdAt      DateTime @default(now())
+}
+
+// -----------------------------------------
+// 6. TOURS & ACTIVITIES
+// -----------------------------------------
+
+model Tour {
+  id             String   @id @default(uuid())
+  vendorId       String
+  tourCode       String   @unique
+  name           String
+  destination    String
+  durationMins   Int
+  vendor         Vendor   @relation(fields: [vendorId], references: [id])
+  departures     TourDeparture[]
+  createdAt      DateTime @default(now())
+}
+
+model TourDeparture {
+  id             String   @id @default(uuid())
+  tourId         String
+  date           DateTime
+  startTime      String
+  capacity       Int
+  sold           Int      @default(0)
+  status         String   @default("Available")
+  tour           Tour     @relation(fields: [tourId], references: [id])
+  
+  @@unique([tourId, date, startTime])
+}
+
+// -----------------------------------------
+// 7. QUOTATIONS
+// -----------------------------------------
+
+model Quotation {
+  id             String   @id @default(uuid())
+  quotationNo    String   @unique
+  customerId     String?
+  b2bAgentId     String?
+  status         String   @default("Draft")
+  validUntil     DateTime
+  currency       String   @default("KWD")
+  items          QuotationItem[]
+  createdAt      DateTime @default(now())
+}
+
+model QuotationItem {
+  id             String   @id @default(uuid())
+  quotationId    String
+  productType    String   // Hotel, Tour
+  productId      String   // roomTypeId or tourId
+  amount         Decimal  @db.Decimal(12, 4)
+  quotation      Quotation @relation(fields: [quotationId], references: [id])
+}
+
+// -----------------------------------------
+// 8. CORPORATE
+// -----------------------------------------
+
+model CorporateProfile {
+  id             String   @id @default(uuid())
+  customerId     String   @unique
+  companyName    String
+  taxNumber      String?
+  creditLimit    Decimal  @default(0) @db.Decimal(12, 4)
+  paymentTerms   Int      @default(30) // e.g., 30 days
+  createdAt      DateTime @default(now())
+}
+
+// -----------------------------------------
+// 9. SPECIAL OFFERS
+// -----------------------------------------
+
+model SpecialOffer {
+  id             String   @id @default(uuid())
+  offerCode      String   @unique
+  name           String
+  type           String   // EarlyBird, StayPay, Discount
+  combinable     Boolean  @default(false)
+  rules          Json     // Store logic for validation (e.g., minDays: 3)
+  createdAt      DateTime @default(now())
+}
+
+// -----------------------------------------
+// 10. APPROVAL WORKFLOWS
+// -----------------------------------------
+
+model ApprovalWorkflow {
+  id             String   @id @default(uuid())
+  module         String   // e.g., "Finance"
+  action         String   // e.g., "Refund"
+  threshold      Decimal  @db.Decimal(12, 4) // KWD 500
+  requiredRole   String   // e.g., "Finance Manager"
+  requests       ApprovalRequest[]
+}
+
+model ApprovalRequest {
+  id             String   @id @default(uuid())
+  workflowId     String
+  requesterId    String
+  approverId     String?
+  status         String   @default("Pending") // Pending, Approved, Rejected
+  referenceId    String   // ID of the invoice or journal being approved
+  workflow       ApprovalWorkflow @relation(fields: [workflowId], references: [id])
+  createdAt      DateTime @default(now())
+}

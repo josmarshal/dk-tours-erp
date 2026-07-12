@@ -1,0 +1,15 @@
+{
+  "name": "digital-tours-erp",
+  "version": "1.0.0",
+  "description": "Digital Tours Advanced Travel Management ERP",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend-b2c",
+    "frontend-admin"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  }
+}
