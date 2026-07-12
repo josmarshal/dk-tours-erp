@@ -18,7 +18,7 @@ export default function Sidebar() {
   return (
     <aside className="erp-sidebar">
       <div style={{ padding: '24px', borderBottom: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-        <img src="/logo.png" alt="DK Equipments" style={{ height: '120px', maxWidth: '250px', objectFit: 'contain', alignSelf: 'flex-start' }} />
+        <img src="/logo.jpg" alt="DK Equipments" style={{ height: '120px', maxWidth: '250px', objectFit: 'contain', alignSelf: 'flex-start' }} />
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em', marginTop: '12px' }}>
           ERP System
         </h2>

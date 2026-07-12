@@ -15,7 +15,7 @@ export const generateInvoicePDF = (booking: any): Promise<Buffer> => {
       });
 
       // Header
-      const logoPath = path.join(__dirname, '../assets/logo.png');
+      const logoPath = path.join(__dirname, '../assets/logo.jpg');
       if (fs.existsSync(logoPath)) {
         doc.image(logoPath, 50, 45, { width: 100 });
       }
