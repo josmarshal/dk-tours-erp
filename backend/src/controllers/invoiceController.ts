@@ -28,7 +28,7 @@ export const downloadInvoice = async (req: Request, res: Response) => {
     const bookingId = req.params.bookingId;
     
     // Fetch booking
-    let booking = mockBookings[bookingId];
+    let booking = bookingId ? mockBookings[bookingId as string] : null;
     if (!booking) {
       // Fallback dummy
       booking = {
