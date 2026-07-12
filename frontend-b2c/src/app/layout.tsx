@@ -30,8 +30,8 @@ export default function RootLayout({
             <a href="#" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Special Offers</a>
           </nav>
           <div style={{ display: 'flex', gap: '16px' }}>
-            <button style={{ background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer' }}>Sign In</button>
-            <button className="b2c-btn" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Sign Up</button>
+            <a href="/login" style={{ background: 'transparent', border: 'none', fontWeight: 600, cursor: 'pointer', textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>Sign In</a>
+            <a href="/signup" className="b2c-btn" style={{ padding: '8px 20px', fontSize: '0.9rem', textDecoration: 'none' }}>Sign Up</a>
           </div>
         </header>
         

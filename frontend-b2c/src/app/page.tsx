@@ -31,7 +31,7 @@ export default function Home() {
             <input type="text" className="search-input" placeholder="2 Adults, 1 Room" />
           </div>
 
-          <button className="b2c-btn" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <button className="b2c-btn" style={{ borderRadius: 'var(--radius-lg)' }} onClick={() => alert('Search functionality is connecting to backend API...')}>
             Search
           </button>
 
