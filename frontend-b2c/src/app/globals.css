@@ -61,7 +61,7 @@ body {
 
 /* UI Components */
 .b2c-header {
-  height: 80px;
+  height: 120px;
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
